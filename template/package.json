@@ -9,28 +9,28 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^6.0.1",
-		"@sveltejs/kit": "^2.22.0",
-		"@sveltejs/vite-plugin-svelte": "^5.1.0",
-		"@types/reveal.js": "^5.2.0",
-		"prettier": "^3.6.0",
-		"prettier-plugin-svelte": "^3.4.0",
-		"prettier-plugin-tailwindcss": "^0.6.13",
-		"shiki": "^3.7.0",
-		"shiki-magic-move": "^1.1.0",
-		"svelte": "^5.34.7",
-		"svelte-check": "^4.2.2",
+		"@sveltejs/adapter-auto": "^7.0.1",
+		"@sveltejs/kit": "^2.51.0",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@types/reveal.js": "^5.2.2",
+		"prettier": "^3.8.1",
+		"prettier-plugin-svelte": "^3.4.1",
+		"prettier-plugin-tailwindcss": "^0.7.2",
+		"shiki": "^3.22.0",
+		"shiki-magic-move": "^1.2.1",
+		"svelte": "^5.50.3",
+		"svelte-check": "^4.3.6",
 		"tslib": "^2.8.1",
-		"typescript": "^5.8.3",
-		"vite": "^6.3.5"
+		"typescript": "^5.9.3",
+		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"@animotion/core": "*",
-		"@animotion/motion": "*",
-		"@fontsource/atkinson-hyperlegible": "^5.2.6",
+		"@animotion/core": "^1.2.2",
+		"@animotion/motion": "^2.0.1",
+		"@fontsource/atkinson-hyperlegible": "^5.2.8",
 		"@fontsource/monaspace-neon": "^5.2.5",
-		"@tailwindcss/vite": "^4.1.10",
+		"@tailwindcss/vite": "^4.1.18",
 		"reveal.js": "^5.2.1",
-		"tailwindcss": "^4.1.10"
+		"tailwindcss": "^4.1.18"
 	}
 }
