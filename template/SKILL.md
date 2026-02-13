@@ -1,9 +1,7 @@
 ---
-name: Animotion
-description: Assistant for creating animated presentations with Animotion
+name: animotion
+description: Creating beautiful animated presentations with Animotion
 ---
-
-# Skills
 
 ## Available Resources
 
