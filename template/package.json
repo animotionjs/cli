@@ -25,8 +25,8 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"@animotion/core": "^1.2.2",
-		"@animotion/motion": "^2.0.1",
+		"@animotion/core": "*",
+		"@animotion/motion": "*",
 		"@fontsource/atkinson-hyperlegible": "^5.2.8",
 		"@fontsource/monaspace-neon": "^5.2.5",
 		"@tailwindcss/vite": "^4.1.18",
