@@ -3,7 +3,7 @@
 	import { tween } from '@animotion/motion';
 
 	let text: HTMLParagraphElement;
-	let code: ReturnType<typeof Code>;
+	let code: Code;
 	let circle = tween({ x: 0, y: 80, r: 80, fill: '#00ffff' });
 	let items = $state([1, 2, 3, 4]);
 	let layout = $state('flex gap-4');
@@ -34,7 +34,7 @@
 				`;
 				await circle.to({ x: 0, fill: '#00ffff' });
 			}}
-			class="mt-16"
+			class="mt-16 rounded-lg border-t border-t-zinc-800 bg-zinc-900 px-8 py-4"
 		>
 			<Code
 				bind:this={code}
@@ -76,7 +76,7 @@
 				async () => {
 					await code.update`
 						async function animate() {
-							await circle.to({ x: 400, fill: '#ffff00' })
+							await circle.to({ x: 400, fill: '#ffff00' });
 						}
 					`;
 					await code.selectLines`2`;
@@ -85,8 +85,8 @@
 				async () => {
 					await code.update`
 						async function animate() {
-							await circle.to({ x: 400, fill: '#ffff00' })
-							await circle.to({ x: 0, fill: '#00ffff' })
+							await circle.to({ x: 400, fill: '#ffff00' });
+							await circle.to({ x: 0, fill: '#00ffff' });
 						}
 					`;
 					await code.selectLines`3`;
@@ -96,8 +96,8 @@
 					await code.selectLines`*`;
 					await code.update`
 						async function animate() {
-							await circle.to({ x: 400, fill: '#ffff00' })
-							await circle.to({ x: 0, fill: '#00ffff' })
+							await circle.to({ x: 400, fill: '#ffff00' });
+							await circle.to({ x: 0, fill: '#00ffff' });
 						}
 					`;
 					await circle.to({ x: 0, fill: '#00ffff' });
@@ -121,7 +121,7 @@
 			<div class={layout}>
 				{#each items as item, i (item)}
 					<Transition
-						class="grid h-[180px] w-[180px] place-content-center rounded-2xl border-t-2 border-white bg-gray-200 text-6xl font-semibold text-black shadow-2xl"
+						class="grid h-45 w-45 place-content-center rounded-2xl border-t-2 border-white bg-gray-200 text-6xl font-semibold text-black shadow-2xl"
 						entry="rotate"
 						duration={2}
 						delay={i * 0.1}
