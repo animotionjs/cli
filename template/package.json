@@ -16,8 +16,6 @@
 		"prettier": "^3.9.5",
 		"prettier-plugin-svelte": "^4.1.1",
 		"prettier-plugin-tailwindcss": "^0.8.1",
-		"shiki": "^4.3.1",
-		"shiki-magic-move": "^1.4.0",
 		"svelte": "^5.56.6",
 		"svelte-check": "^4.7.3",
 		"tslib": "^2.8.1",
@@ -31,6 +29,8 @@
 		"@fontsource/monaspace-neon": "^5.2.5",
 		"@tailwindcss/vite": "^4.3.3",
 		"reveal.js": "^6.0.1",
+		"shiki": "^4.3.1",
+		"@shikijs/magic-move": "^4.3.1",
 		"tailwindcss": "^4.3.3"
 	}
 }
