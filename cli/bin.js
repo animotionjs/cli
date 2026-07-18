@@ -71,11 +71,21 @@ async function main() {
 		return process.exit(0);
 	}
 
-	const dependencies = await confirm({
-		message: 'Install dependencies? (uses pnpm)'
+	const pm = await select({
+		message: 'Which package manager do you want to use?',
+		options: [
+			{ value: 'skip', label: 'Skip', hint: 'I will install dependencies myself' },
+			{ value: 'pnpm', label: 'pnpm', hint: 'recommended' },
+			{ value: 'npm', label: 'npm' },
+			{ value: 'yarn', label: 'yarn' },
+			{ value: 'bun', label: 'bun' },
+			{ value: 'deno', label: 'deno' }
+		]
 	});
 
-	if (isCancel(dependencies)) {
+	const devCommands = { deno: 'deno task dev' };
+
+	if (isCancel(pm)) {
 		cancel('Operation cancelled.');
 		return process.exit(0);
 	}
@@ -93,17 +103,17 @@ async function main() {
 		(error) => error && console.log(error)
 	);
 
-	if (dependencies) {
+	if (pm !== 'skip') {
 		const s = spinner();
 
-		s.start('Installing dependencies...');
+		s.start(`Installing dependencies with ${pm}...`);
 
 		try {
-			await execSync('pnpm i', { cwd });
+			await execSync(`${pm} install`, { cwd });
 		} catch (e) {
 			console.log();
-			console.log('📦️ pnpm is required:');
-			console.log('npm i -g pnpm');
+			console.log(`📦️ ${pm} is required:`);
+			console.log(`Install or update ${pm} and try again.`);
 			return process.exit(0);
 		}
 
@@ -112,8 +122,11 @@ async function main() {
 
 	outro('Done. 🪄');
 
-	console.log('💿️ Start the development server:');
-	console.log('pnpm run dev');
+	if (pm !== 'skip') {
+		console.log('💿️ Start the development server:');
+		console.log(devCommands[pm] ?? `${pm} run dev`);
+	}
+
 	console.log();
 	console.log('💬 Discord');
 	console.log('https://joyofcode.xyz/invite');
