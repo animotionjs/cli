@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import util from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { cancel, confirm, intro, isCancel, outro, spinner, text } from '@clack/prompts';
+import { cancel, confirm, intro, isCancel, outro, select, spinner, text } from '@clack/prompts';
 
 const execSync = util.promisify(exec);
 
