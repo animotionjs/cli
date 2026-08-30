@@ -1,18 +1,20 @@
-import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
-import { sveltekit } from '@sveltejs/kit/vite';
 import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit({
-			adapter: adapter(),
 			compilerOptions: {
-				runes: true
+				// force runes mode for the project, except for libraries (can be removed in Svelte 6)
+				runes: ({ filename }) =>
+					filename.split(/[/\\]/).includes('node_modules') ? undefined : true,
+				experimental: { async: true }
 			},
-			preprocess: vitePreprocess()
+			adapter: adapter(),
+			experimental: { remoteFunctions: true }
 		})
 	]
 });

@@ -1,36 +1,51 @@
 {
 	"name": "animotion",
 	"type": "module",
+	"engines": {
+		"node": ">=23.6.0"
+	},
+	"imports": {
+		"#lib/*": "./src/lib/*"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-auto": "^7.0.1",
-		"@sveltejs/kit": "^2.70.0",
-		"@sveltejs/vite-plugin-svelte": "^7.2.0",
-		"@types/reveal.js": "^5.2.2",
-		"prettier": "^3.9.5",
-		"prettier-plugin-svelte": "^4.1.1",
-		"prettier-plugin-tailwindcss": "^0.8.1",
-		"svelte": "^5.56.6",
-		"svelte-check": "^4.7.3",
-		"tslib": "^2.8.1",
-		"typescript": "^7.0.2",
-		"vite": "^8.1.5"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"@animotion/core": "*",
-		"@animotion/motion": "*",
-		"@fontsource/atkinson-hyperlegible": "^5.2.8",
-		"@fontsource/monaspace-neon": "^5.2.5",
-		"@tailwindcss/vite": "^4.3.3",
-		"reveal.js": "^6.0.1",
-		"shiki": "^4.3.1",
-		"@shikijs/magic-move": "^4.3.1",
-		"tailwindcss": "^4.3.3"
+		"@animotion/core": "next"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"ffmpeg-static"
+		]
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@fontsource-variable/jetbrains-mono": "^5.3.0",
+		"@fontsource/atkinson-hyperlegible": "^5.3.0",
+		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/kit": "next",
+		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"@tailwindcss/vite": "^4.3.0",
+		"@types/node": "^24",
+		"eslint": "^10.4.1",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.19.0",
+		"globals": "^17.6.0",
+		"prettier": "^3.8.3",
+		"prettier-plugin-svelte": "^4.1.0",
+		"prettier-plugin-tailwindcss": "^0.8.0",
+		"svelte": "^5.56.1",
+		"svelte-check": "^4.6.0",
+		"tailwindcss": "^4.3.0",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.60.1",
+		"vite": "^8.0.16"
 	}
 }

@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import util from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { cancel, confirm, intro, isCancel, outro, spinner, text, select } from '@clack/prompts';
+import { cancel, confirm, intro, isCancel, outro, spinner, text } from '@clack/prompts';
 
 const execSync = util.promisify(exec);
 
@@ -50,27 +50,6 @@ async function main() {
 		}
 	}
 
-	const template = await select({
-		message: 'Pick the template you want to use:',
-		options: [
-			{
-				value: 'default',
-				label: 'Default',
-				hint: 'You define and manage slides'
-			},
-			{
-				value: 'file-based',
-				label: 'File-based slides',
-				hint: 'Slides are defined inside the /slides folder and managed for you'
-			}
-		]
-	});
-
-	if (isCancel(template)) {
-		cancel('Operation cancelled.');
-		return process.exit(0);
-	}
-
 	const pm = await select({
 		message: 'Which package manager do you want to use?',
 		options: [
@@ -92,16 +71,11 @@ async function main() {
 
 	copy('../template', cwd);
 
-	if (template !== 'default') {
-		copy(`../${template}`, cwd);
+	// npm ignores .gitignore so the template ships it as ignore
+	const ignorePath = path.join(cwd, 'ignore');
+	if (fs.existsSync(ignorePath)) {
+		fs.renameSync(ignorePath, path.join(cwd, '.gitignore'));
 	}
-
-	// npm ignores `.gitignore` so rename it
-	fs.renameSync(
-		path.join(cwd, 'ignore'),
-		path.join(cwd, '.gitignore'),
-		(error) => error && console.log(error)
-	);
 
 	if (pm !== 'skip') {
 		const s = spinner();

@@ -1,1 +1,0 @@
-../../../.agents/skills/animotion/SKILL.md
