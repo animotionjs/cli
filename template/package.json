@@ -27,8 +27,6 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
-		"@fontsource-variable/jetbrains-mono": "^5.3.0",
-		"@fontsource/atkinson-hyperlegible": "^5.3.0",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
