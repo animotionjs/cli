@@ -1,19 +1,33 @@
 #!/usr/bin/env node
 
-import { exec } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import util from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { cancel, confirm, intro, isCancel, outro, select, spinner, text } from '@clack/prompts';
-
-const execSync = util.promisify(exec);
 
 function copy(from, to) {
 	const modulePath = fileURLToPath(import.meta.url);
 	const templateDir = path.join(path.dirname(modulePath), from);
 	const destinationDir = path.join(process.cwd(), to);
-	fs.cpSync(templateDir, destinationDir, { recursive: true });
+	fs.cpSync(templateDir, destinationDir, {
+		recursive: true,
+		filter: (src) => {
+			const base = path.basename(src);
+			return base !== 'node_modules' && base !== '.svelte-kit';
+		}
+	});
+}
+
+function installDependencies(pm, cwd) {
+	return new Promise((resolve, reject) => {
+		const child = spawn(pm, ['install'], { cwd, stdio: 'inherit', shell: true });
+		child.on('error', reject);
+		child.on('close', (code) => {
+			if (code === 0) resolve();
+			else reject(Object.assign(new Error(`${pm} install exited with code ${code}`), { code }));
+		});
+	});
 }
 
 async function main() {
@@ -83,12 +97,17 @@ async function main() {
 		s.start(`Installing dependencies with ${pm}...`);
 
 		try {
-			await execSync(`${pm} install`, { cwd });
+			await installDependencies(pm, cwd);
 		} catch (e) {
+			s.stop(`Failed to install dependencies with ${pm}.`);
 			console.log();
-			console.log(`📦️ ${pm} is required:`);
-			console.log(`Install or update ${pm} and try again.`);
-			return process.exit(0);
+			if (e?.code === 'ENOENT') {
+				console.log(`📦️ ${pm} is required:`);
+				console.log(`Install or update ${pm} and try again.`);
+			} else {
+				console.log(e?.message ?? e);
+			}
+			return process.exit(1);
 		}
 
 		s.stop('Installed dependencies.');

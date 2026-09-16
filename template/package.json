@@ -20,11 +20,6 @@
 	"dependencies": {
 		"@animotion/core": "next"
 	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"ffmpeg-static"
-		]
-	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@sveltejs/adapter-auto": "next",
