@@ -6,6 +6,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cancel, confirm, intro, isCancel, outro, select, spinner, text } from '@clack/prompts';
 
+const pkg = JSON.parse(
+	fs.readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8')
+);
+
 function copy(from, to) {
 	const modulePath = fileURLToPath(import.meta.url);
 	const templateDir = path.join(path.dirname(modulePath), from);
@@ -33,7 +37,7 @@ function installDependencies(pm, cwd) {
 async function main() {
 	console.log();
 
-	intro('Welcome to Animotion!');
+	intro(`Welcome to Animotion! · CLI v${pkg.version}`);
 
 	const dir = await text({
 		message: 'Where should I create your project?',
