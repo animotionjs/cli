@@ -3,3 +3,6 @@ allowBuilds:
 
 onlyBuiltDependencies:
   - ffmpeg-static
+
+minimumReleaseAgeExclude:
+  - '@animotion/core'
