@@ -18,7 +18,7 @@ function copy(from, to) {
 		recursive: true,
 		filter: (src) => {
 			const base = path.basename(src);
-			return base !== 'node_modules' && base !== '.svelte-kit';
+			return base !== 'node_modules' && base !== '.svelte-kit' && base !== 'pnpm-lock.yaml';
 		}
 	});
 }
