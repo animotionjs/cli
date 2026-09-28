@@ -9,7 +9,7 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm dev` serves the presentation; edit the scenes in `src/scenes/` to build your own. Visit `/timeline` for a scrubbable preview of a single scene.
+`pnpm dev` serves the dashboard at `/` listing every project; edit the scenes in `src/projects/example/scenes/` to build your own. Each presentation plays at `/presentation/<slug>` and its editor lives at `/timeline/<slug>`.
 
 ## Editor setup
 
@@ -39,9 +39,9 @@ A presentation is an ordered `sequence` of scenes. Each scene is a component tha
 </div>
 ```
 
-The library provides the player shell (`Scene`), the animation engine (`createScene`, `SceneManager`, step types), a code component (`Code`) that morphs between source states, a camera component (`Camera`) for flying across an oversized canvas, and a plugin system (`PluginManager`, `fullscreenPlugin`).
+The library provides the player shell (`Scene`), the animation engine (`createScene`, `SceneManager`, step types), sound playback from user files, a code component (`Code`) that morphs between source states, a camera component (`Camera`) for flying across an oversized canvas, and a plugin system (`PluginManager`, `fullscreenPlugin`).
 
-Scenes live in `src/scenes/`. A scene is either a file (`04-code.svelte`) or a folder containing a `scene.svelte` component (`04-code/scene.svelte`), so you can colocate assets and helper components with the scene. Each scene must be prefixed with a number that sets its order in the sequence: `01-intro.svelte` plays before `02-about.svelte`. The rest of the name becomes the scene id (`intro`). The sequence is built automatically by `src/lib/config/scenes.ts`.
+Scenes live in `src/projects/<slug>/scenes/`, the bundled example in `src/projects/example/scenes/`. A scene is either a file (`04-code.svelte`) or a folder containing a `scene.svelte` component (`04-code/scene.svelte`), so you can colocate assets and helper components with the scene. Each scene must be prefixed with a number that sets its order in the sequence: `01-intro.svelte` plays before `02-about.svelte`. The rest of the name becomes the scene id (`intro`). The sequence is built automatically by `src/lib/config/scenes.ts`.
 
 ## Layout animations
 
@@ -230,7 +230,7 @@ The `<Code />` component accepts a few props:
 
 ## Other steps
 
-- `wait(seconds = 1)`: keeps the previous step's finished frame on screen for `seconds` longer, so the viewer has time to read. Waits aren't steps: they don't count toward `scene.step` or `totalSteps`, and the live player skips them. They only show up in rendered video. A wait before anything else keeps the first frame up until the first step starts.
+- `wait(seconds = 1)`: holds the previous step's finished frame up longer, so the viewer has time to read. Waits aren't steps and don't count toward `scene.step` or `totalSteps`. The live player skips them unless the scene has sound. Then they play out so the preview matches the render. A wait before anything else holds the first frame.
 
 ```svelte
 <script lang="ts">
@@ -285,6 +285,39 @@ The `<Code />` component accepts a few props:
 	});
 </script>
 ```
+
+## Audio
+
+Scenes play user files through `.sound(src)`. Import audio with `?url` and pass the URL:
+
+```svelte
+<script lang="ts">
+	import { createScene } from '@animotion/core';
+	import soundUrl from './sound.mp3?url';
+
+	const scene = createScene({ opacity: 0 }).all((s) => {
+		s.sound(soundUrl, { duration: 1.5 });
+		s.tween('opacity', 1, 0.6);
+	});
+</script>
+```
+
+The sound plays while the fade runs.
+
+Outside `.all()`, calls take turns: a sound with a `duration` makes the scene wait until it finishes. One without takes no time, so the scene moves straight on.
+
+Layer music under everything with `at`, which starts a sound at absolute seconds without moving the cursor:
+
+```svelte
+const scene = createScene({ opacity: 0 })
+	.sound(musicUrl, { at: 0, loop: true, volume: 0.3 })
+	.sound(soundUrl, { duration: 1.5 })
+	.tween('opacity', 1, 0.6);
+```
+
+`sound(src)` accepts `delay`, `at`, `volume`, `rate`, `loop`, `trimStart`, `duration`, `fadeIn` and `fadeOut`. `delay` and `at` cannot be combined.
+
+A sound without a `duration` has to start before the scene ends.
 
 ## Reading timeline progress
 
@@ -350,7 +383,7 @@ The `<Code />` component accepts a few props:
 
 ## Previewing a scene
 
-The `/timeline/[[scene]]` route is a scrubbable editor for one scene at a time. Visit `/timeline` to open the first scene, or `/timeline/<id>` (e.g. `/timeline/about`) to jump straight to a scene. The URL stays in sync as you move between scenes, so a link deep-links to the exact scene.
+The `/timeline/[slug]/[[scene]]` route is a scrubbable editor for one scene at a time. Visit `/timeline/example` to open the first scene of the example, or `/timeline/example/about` to jump straight to a scene. The URL stays in sync as you move between scenes, so a link deep-links to the exact scene.
 
 The track shows the scene as four kinds of segment laid out left to right:
 
@@ -375,7 +408,7 @@ Every frame is driven by the same engine and FPS used to render, so what you scr
 
 `Preview` renders a 30 fps draft with lower-quality JPEG written to a separate `*.preview.mp4` file; `Full` captures lossless PNG frames and `Balanced` full-resolution JPEG. Every tier renders at the same size, so the layout always matches the final render.
 
-The render attaches to the dev server you are already running, so the page never reloads, and one render runs at a time. Video renders land in `rendered/<id>.mp4` (previews in `rendered/<id>.preview.mp4`), full presentations in `rendered/video.mp4` or whatever `configure({ render: { out } })` names, and image sequences in `rendered/frames/<id>/` as `frame_000001.png` files.
+The render attaches to the dev server you are already running, so the page never reloads, and one render runs at a time. Video renders land in `rendered/<slug>/<id>.mp4` (previews in `rendered/<slug>/<id>.preview.mp4`), full presentations in `rendered/<slug>/video.mp4` or whatever `configure({ render: { out } })` names, and image sequences in `rendered/<slug>/frames/<id>/` as `frame_000001.png` files.
 
 ## Configuration
 
@@ -436,7 +469,7 @@ export const plugins: Plugin[] = [fullscreenPlugin(), speakerPlugin()];
 
 A plugin is an object with a `name` and optional hooks:
 
-- `setup(ctx)` — runs when the presentation mounts; `ctx.state` is a read-only view of the current scene and step (`sceneId`, `sceneIndex`, `totalScenes`, `step`, `totalSteps`, `stepCompleted`, `finished`), so plugins can read where the deck started, not just what changed. It may return a cleanup function.
+- `setup(ctx)` runs when the presentation mounts; `ctx.state` is a read-only view of the current scene and step (`sceneId`, `sceneIndex`, `totalScenes`, `step`, `totalSteps`, `stepCompleted`, `finished`), so plugins can read where the presentation started, not just what changed. It may return a cleanup function.
 - `onSceneChange({ id, index })` / `onStepChange(step, total)` — run as the presentation plays.
 - `onKeydown(event)` — runs on every keydown; returning `true` consumes the key.
 
@@ -457,7 +490,7 @@ export const plugin: Plugin = {
 
 `fullscreenPlugin()` toggles fullscreen with the `f` key.
 
-`speakerPlugin()` opens a speaker view — press `s` (or call `openSpeakerView()`) to pop out a window showing a live mirror of the presentation in an iframe, the current scene's notes, a timer, a clickable scene outline, and next/prev controls that drive the presentation. Because the mirror runs the real presentation (registered with the plugin in receiver mode), stepping through a scene advances in place without replaying the entrance transition.
+`speakerPlugin()` opens a speaker view. Press `s` (or call `openSpeakerView()`) to pop out a window showing a live copy of the presentation, the current scene's notes, a timer, a clickable scene outline, and next/prev controls that drive the presentation. Because the copy runs the real presentation and follows it, stepping through a scene advances without replaying the entrance transition.
 
 Notes are authored in each scene in a hidden `[data-notes]` box, which the presenter forwards to the speaker view along with the presentation state (so notes can contain styled markup):
 
@@ -465,7 +498,7 @@ Notes are authored in each scene in a hidden `[data-notes]` box, which the prese
 <div data-notes>What I say when this slide is on screen.</div>
 ```
 
-The speaker view opens at `/?speaker`, which the main scene route renders as `<SpeakerView>` instead of the presentation:
+The speaker view opens at `/presentation/<slug>?speaker`, which the presentation route renders as `<SpeakerView>` instead of the presentation:
 
 ```svelte
 <script lang="ts">
@@ -485,7 +518,11 @@ The speaker view opens at `/?speaker`, which the main scene route renders as `<S
 {/if}
 ```
 
-For example, `/?speaker&session=demo` connects the speaker view to the `demo` session.
+For example, `?speaker&session=demo` on the current presentation path connects the speaker view to the `demo` session.
+
+## Projects
+
+`/` lists projects. The example lives in `src/projects/example/scenes/` like any other project. Each presentation plays at `/presentation/<slug>` and its editor lives at `/timeline/<slug>`. Bare `/presentation` and `/timeline` redirect to the default project, which is `example` when present and the first project otherwise.
 
 ## Rendering a video
 
@@ -507,14 +544,14 @@ By default nothing is written to disk. Pass `--frames-only` to save raw frames t
 
 ### Rendering individual scenes
 
-Pass one or more scene ids to render only those scenes, each written to its own video (`rendered/<id>.mp4`):
+Pass one or more scene ids to render only those scenes, each written to its own video (`rendered/<slug>/<id>.mp4`). Pass `--project <slug>` to pick the project (default: `example` when present, else the first project):
 
 ```sh
-animotion render first # renders the first scene
-animotion render 01-first 02-second # renders individual scenes
+animotion render first --project banana # renders the first scene of banana
+animotion render 01-first 02-second # renders individual scenes of the default project
 ```
 
-Scenes are matched by their id (the filename without the number prefix and `.svelte`), so `01-intro` and `intro` are equivalent. Use `--out` to name the output when rendering a single scene, e.g. `animotion render intro --out rendered/intro.mp4`. To write the whole presentation as one video per scene instead of a single combined video, pass `--separate` — each scene is written to `rendered/<id>.mp4`.
+Scenes are matched by their id (the filename without the number prefix and `.svelte`), so `01-intro` and `intro` are equivalent. Use `--out` to name the output when rendering a single scene, e.g. `animotion render intro --out rendered/banana/intro.mp4`. To write the whole presentation as one video per scene instead of a single combined video, pass `--separate` — each scene is written to `rendered/<slug>/<id>.mp4`.
 
 ## Styling
 
